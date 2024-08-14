@@ -5,11 +5,11 @@ import toast from "react-hot-toast";
 export default function App() {
   const [height, setHeight] = useState(0);
   const [kirpichtimeconc, setKirpichTimeConc] = useState([]);
-  const [kirpichvalue, setKirpichValue] = useState({
-    slope: [],
-    length: [],
-    tc: [],
-  });
+  const [kirpichvalue, setKirpichValue] = useState([
+    { slope: [], length: [] },
+  ]);
+  const [scsvalue, setScsValue] = useState([{ slope: [], length: [], cn: [] }]);
+
   const [kirpichlength, setKirpichLength] = useState(null);
   const [kirpichslope, setKirpichSlope] = useState(null);
   const [scstimeconc, setScsTimeConc] = useState([]);
@@ -20,17 +20,43 @@ export default function App() {
   const [currentKirpichPage, setCurrentKirpichPage] = useState(1);
   const [currentscsPage, setCurrentScsPage] = useState(1);
   const itemsPerPage = 10;
+  const prepareKirlichTableData = () => {
+    const lengths = kirpichvalue[0].length; // Assuming all data is in the first object
+    const slopes = kirpichvalue[0].slope;
+    const tcs = kirpichvalue[0].tc;
 
+    // Create an array of objects combining these values
+    return lengths.map((length, index) => ({
+      length,
+      slope: slopes[index],
+      tc: tcs[index],
+    }));
+  };
+  const KirlichtableData = prepareKirlichTableData();
+
+  const prepareScsTableData = () => {
+    const lengths = scsvalue[0].length; // Assuming all data is in the first object
+    const slopes = scsvalue[0].slope;
+    const cn = scsvalue[0].cn;
+
+    // Create an array of objects combining these values
+    return lengths.map((length, index) => ({
+      length,
+      slope: slopes[index],
+      cn: cn[index],
+    }));
+  };
+  const ScstableData = prepareScsTableData();
   // Calculate total pages
   const totalKirpichTablePage = Math.ceil(
-    kirpichtimeconc.length / itemsPerPage
+    scsvalue[0].length.length / itemsPerPage
   );
-  const totalScsTablePage = Math.ceil(scstimeconc.length / itemsPerPage);
+  const totalScsTablePage = Math.ceil(scsvalue[0].length.length / itemsPerPage);
 
   // Get current page data
   const indexOfLastItemkirpich = currentKirpichPage * itemsPerPage;
   const indexOfFirstItemkirpich = indexOfLastItemkirpich - itemsPerPage;
-  const currentKirpichItems = kirpichtimeconc.slice(
+  const currentKirpichItems = KirlichtableData.slice(
     indexOfFirstItemkirpich,
     indexOfLastItemkirpich
   );
@@ -38,15 +64,15 @@ export default function App() {
   // SCS page data
   const indexOfLastItemscs = currentscsPage * itemsPerPage;
   const indexOfFirstItemscs = indexOfLastItemscs - itemsPerPage;
-  const currentscsItems = scstimeconc.slice(
+  const currentscsItems = ScstableData.slice(
     indexOfFirstItemscs,
     indexOfLastItemscs
   );
-  const calculateKirpichTime = () => {
+  const generateKirpichValues = () => {
     const L = parseFloat(kirpichlength);
     const S = parseFloat(kirpichslope);
 
-    if ((L === 0 && L <= 100 && S >= 0.001 && S <= 0.2)) {
+    if (L > 0 && L <= 100 && S >= 0.001 && S <= 0.2) {
       const slopes = [];
       for (let j = 0.001; j <= 0.2; j += 0.001) {
         slopes.push(j.toFixed(3));
@@ -56,26 +82,13 @@ export default function App() {
       for (let i = 0.5; i <= 100; i += 0.5) {
         lengths.push(i.toFixed(3));
       }
-
-      let data = [];
-      let tcCount = 0;
-      for (const slope of slopes) {
-        // console.log(slope);
-        for (let length of lengths) {
-          if (tcCount >= lengths.length - 1) break;
-          const Tc = (0.0195 * Math.pow(length, 0.77)) / Math.pow(slope, 0.385);
-
-          // Add to data array
-          data.push(`${length}-${slope}=${Tc.toFixed(3)}`);
-          console.log(data);
-          tcCount++;
-        }
-      }
-
       // // console.log(data); // Log the entire data array to check values
-      setKirpichTimeConc(data);
-      // console.log("Slopes array:", slopes);
-      // console.log("Lengths array:", lengths);
+      setKirpichValue([
+        {
+          slope: slopes,
+          length: lengths,
+        },
+      ]);
     } else {
       if (L > 100 || L < 1) {
         toast.error("Please ensure the length (L) is between 1 and 100");
@@ -86,7 +99,7 @@ export default function App() {
     }
   };
 
-  const calculateScsime = () => {
+  const generateScsValues = () => {
     const L = parseFloat(scslength);
     const S = parseFloat(scsslope);
 
@@ -108,27 +121,14 @@ export default function App() {
         CN.push(a);
         console.log(`Added CN: ${a}`); // Logging the length values
       }
-      let data = [];
-      let tcCount = 0;
 
-      outerLoop: for (let slope of slopes) {
-        for (let cn of CN) {
-          for (let length of lengths) {
-            if (tcCount >= lengths?.length - 1) break outerLoop;
-
-            // const Tc = 0.0195 * Math.pow(length, 0.77) / Math.pow(slope, 0.385);
-            const SC =
-              0.000877 *
-              Math.pow(length, 0.8) *
-              Math.pow(1000 / cn - 9, 0.7) *
-              Math.pow(slope, -0.5);
-
-            data.push(`${length}-${slope}-${cn}=${SC.toFixed(3)}`);
-            tcCount++;
-          }
-        }
-      }
-      setScsTimeConc(data);
+      setScsValue([
+        {
+          slope: slopes,
+          length: lengths,
+          cn: CN,
+        },
+      ]);
     } else {
       if (L > 100 || L < 1) {
         toast.error("Please ensure the length (L) is between 1 and 100");
@@ -236,7 +236,7 @@ export default function App() {
         }
       );
   }, []);
-
+  // console.log(currentKirpichItems);
   return (
     <div className="based" style={{ height }}>
       <div className="w-full overflow-hidden py-40 flex items-center justify-center relative min-h-[100vh]">
@@ -313,7 +313,7 @@ export default function App() {
                 </label>
                 <div className="w-full">
                   <button
-                    onClick={calculateKirpichTime}
+                    onClick={generateKirpichValues}
                     style={{ transition: "all ease .4s" }}
                     className="px-4 text-[#fff] bg-[rgba(0,0,0,1)] hover:scale-[0.89] outline-none text-lg font-semibold w-full h-[70px] rounded-lg"
                   >
@@ -368,7 +368,7 @@ export default function App() {
 
                 <div className="w-full">
                   <button
-                    onClick={calculateScsime}
+                    onClick={generateScsValues}
                     style={{ transition: "all ease .4s" }}
                     className="px-4 text-[#fff] bg-[rgba(0,0,0,1)] hover:scale-[0.89] outline-none text-lg font-semibold w-full h-[70px] rounded-lg"
                   >
@@ -403,23 +403,25 @@ export default function App() {
                   </thead>
                   <tbody>
                     {currentKirpichItems.map((time, index) => {
-                      const [lengthWithSlope, Tc] = time.split("=");
-                      const [length, slope] = lengthWithSlope.split("-");
+                      // const { lengthWithSlope } = time;
+                      const { length, slope } = time;
+                      // console.log(length, slope, tc);
+                      const tc =
+                        (0.0195 * Math.pow(length, 0.77)) /
+                        Math.pow(slope, 0.385);
                       return (
                         <tr key={index} className="bg-white even:bg-gray-100">
                           <td className="border border-gray-400 px-4 py-2">
-                            {indexOfFirstItemkirpich + index + 1}
+                            {index + 1}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
                             {length}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
-                            {" "}
-                            {/* New Slope Column Data */}
                             {slope}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
-                            {Tc}
+                            {tc.toFixed(3)}
                           </td>
                         </tr>
                       );
@@ -457,8 +459,12 @@ export default function App() {
                   </thead>
                   <tbody>
                     {currentscsItems.map((time, index) => {
-                      const [lengthWithSlope, Tc] = time.split("=");
-                      const [length, slope, cn] = lengthWithSlope.split("-");
+                      const { length, slope, cn } = time;
+                      const Tc =
+                        0.000877 *
+                        Math.pow(length, 0.8) *
+                        Math.pow(1000 / cn - 9, 0.7) *
+                        Math.pow(slope, -0.5);
                       return (
                         <tr key={index} className="bg-white even:bg-gray-100">
                           <td className="border border-gray-400 px-4 py-2">
@@ -468,13 +474,13 @@ export default function App() {
                             {length}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
-                            {slope}
+                            {slope.toFixed(3)}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
                             {cn}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
-                            {Tc}
+                            {Tc.toFixed(3)}
                           </td>
                         </tr>
                       );
