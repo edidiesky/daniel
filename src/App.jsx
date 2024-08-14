@@ -48,7 +48,7 @@ export default function App() {
       }
 
       let lengths = [];
-      for (let i = 1; i <= 100; i += 0.5) {
+      for (let i = 0.5; i <= 100; i += 0.5) {
         lengths.push(i.toFixed(3));
       }
 
