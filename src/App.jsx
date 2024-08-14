@@ -5,6 +5,11 @@ import toast from "react-hot-toast";
 export default function App() {
   const [height, setHeight] = useState(0);
   const [kirpichtimeconc, setKirpichTimeConc] = useState([]);
+  const [kirpichvalue, setKirpichValue] = useState({
+    slope: [],
+    length: [],
+    tc: [],
+  });
   const [kirpichlength, setKirpichLength] = useState(null);
   const [kirpichslope, setKirpichSlope] = useState(null);
   const [scstimeconc, setScsTimeConc] = useState([]);
@@ -41,7 +46,7 @@ export default function App() {
     const L = parseFloat(kirpichlength);
     const S = parseFloat(kirpichslope);
 
-    if (L > 0 && S >= 0.001 && S <= 0.2) {
+    if ((L === 0 && L <= 100 && S >= 0.001 && S <= 0.2)) {
       const slopes = [];
       for (let j = 0.001; j <= 0.2; j += 0.001) {
         slopes.push(j.toFixed(3));

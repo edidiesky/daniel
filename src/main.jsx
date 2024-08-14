@@ -10,6 +10,7 @@ root.render(
       style={{
         boxShadow: "0 2px 10px rgba(0,0,0,.1)",
         width: "400px",
+        zIndex:'400000'
       }}
     />
     <App />
