@@ -37,37 +37,40 @@ export default function App() {
     indexOfFirstItemscs,
     indexOfLastItemscs
   );
-
   const calculateKirpichTime = () => {
     const L = parseFloat(kirpichlength);
     const S = parseFloat(kirpichslope);
 
     if (L > 0 && S >= 0.001 && S <= 0.2) {
-      let slopes = [];
-      for (let j = S; j <= 0.2; j += 0.001) {
-        slopes.push(j);
-        console.log(`Added slope: ${j}`); // Logging the slope values
+      const slopes = [];
+      for (let j = 0.001; j <= 0.2; j += 0.001) {
+        slopes.push(j.toFixed(3));
       }
 
       let lengths = [];
-      for (let i = L; i <= 100; i += 0.5) {
-        lengths.push(i);
-        console.log(`Added length: ${i}`); // Logging the length values
+      for (let i = 1; i <= 100; i += 0.5) {
+        lengths.push(i.toFixed(3));
       }
 
       let data = [];
       let tcCount = 0;
-
-      outerLoop: for (let slope of slopes) {
+      for (const slope of slopes) {
+        // console.log(slope);
         for (let length of lengths) {
-          if (tcCount >= lengths?.length - 1) break outerLoop;
-
+          if (tcCount >= lengths.length - 1) break;
           const Tc = (0.0195 * Math.pow(length, 0.77)) / Math.pow(slope, 0.385);
-          data.push(`Tc-${length}=${Tc.toFixed(3)}`);
+
+          // Add to data array
+          data.push(`${length}-${slope}=${Tc.toFixed(3)}`);
+          console.log(data);
           tcCount++;
         }
       }
-      setKirpichTimeConc(data);
+
+      // // console.log(data); // Log the entire data array to check values
+      // setKirpichTimeConc(data);
+      // console.log("Slopes array:", slopes);
+      // console.log("Lengths array:", lengths);
     } else {
       if (L > 100 || L < 1) {
         toast.error("Please ensure the length (L) is between 1 and 100");
@@ -84,13 +87,13 @@ export default function App() {
 
     if (L > 0 && S >= 0.001 && S <= 0.2) {
       let slopes = [];
-      for (let j = S; j <= 0.2; j += 0.001) {
+      for (let j = 0.001; j <= 0.2; j += 0.001) {
         slopes.push(j);
         // console.log(`Added slope: ${j}`); // Logging the slope values
       }
       // generate length up to 100
       let lengths = [];
-      for (let i = L; i <= 100; i += 0.5) {
+      for (let i = 1; i <= 100; i += 0.5) {
         lengths.push(i);
         // console.log(`Added length: ${i}`); // Logging the length values
       }
@@ -115,7 +118,7 @@ export default function App() {
               Math.pow(1000 / cn - 9, 0.7) *
               Math.pow(slope, -0.5);
 
-            data.push(`SC-${length}=${SC.toFixed(3)}`);
+            data.push(`${length}-${slope}-${cn}=${SC.toFixed(3)}`);
             tcCount++;
           }
         }
@@ -249,7 +252,7 @@ export default function App() {
           alt=""
           className="absolute z-20 object-cover w-full h-full"
         />
-        <div className="w-full h-full lg:px-0 z-40 px-4 md:max-w-[1300px] justify-center mx-auto flex flex-col gap-20">
+        <div className="w-full h-full lg:px-0 z-40 px-4 md:max-w-[1200px] justify-center mx-auto flex flex-col gap-20">
           <div className="w-full flex flex-col">
             <div className="hide">
               <h2 className="text-6xl hero_header font-bold md:text-8xl lg:text-center text-[#fff]">
@@ -386,20 +389,29 @@ export default function App() {
                         Length
                       </th>
                       <th className="border border-gray-400 px-4 py-2">
+                        Slope
+                      </th>
+                      <th className="border border-gray-400 px-4 py-2">
                         Time of Concentration (Tc)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentKirpichItems.map((time, index) => {
-                      const [length, Tc] = time.split("=");
+                      const [lengthWithSlope, Tc] = time.split("=");
+                      const [length, slope] = lengthWithSlope.split("-");
                       return (
                         <tr key={index} className="bg-white even:bg-gray-100">
                           <td className="border border-gray-400 px-4 py-2">
                             {indexOfFirstItemkirpich + index + 1}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
-                            {length.split("-")[1]}
+                            {length}
+                          </td>
+                          <td className="border border-gray-400 px-4 py-2">
+                            {" "}
+                            {/* New Slope Column Data */}
+                            {slope}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
                             {Tc}
@@ -430,20 +442,33 @@ export default function App() {
                         Length
                       </th>
                       <th className="border border-gray-400 px-4 py-2">
+                        Slope
+                      </th>
+                      <th className="border border-gray-400 px-4 py-2">
+                        CN
+                      </th>
+                      <th className="border border-gray-400 px-4 py-2">
                         Time of Concentration (Tc)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentscsItems.map((time, index) => {
-                      const [length, Tc] = time.split("=");
+                      const [lengthWithSlope, Tc] = time.split("=");
+                      const [length, slope, cn] = lengthWithSlope.split("-");
                       return (
                         <tr key={index} className="bg-white even:bg-gray-100">
                           <td className="border border-gray-400 px-4 py-2">
                             {indexOfFirstItemscs + index + 1}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
-                            {length.split("-")[1]}
+                            {length}
+                          </td>
+                          <td className="border border-gray-400 px-4 py-2">
+                            {slope}
+                          </td>
+                          <td className="border border-gray-400 px-4 py-2">
+                            {cn}
                           </td>
                           <td className="border border-gray-400 px-4 py-2">
                             {Tc}
