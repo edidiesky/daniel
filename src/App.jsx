@@ -4,7 +4,6 @@ import SplitType from "split-type";
 import toast from "react-hot-toast";
 export default function App() {
   const [height, setHeight] = useState(0);
-  const [kirpichtimeconc, setKirpichTimeConc] = useState([]);
   const [kirpichvalue, setKirpichValue] = useState([
     { slope: [], length: [] },
   ]);
@@ -12,7 +11,6 @@ export default function App() {
 
   const [kirpichlength, setKirpichLength] = useState(null);
   const [kirpichslope, setKirpichSlope] = useState(null);
-  const [scstimeconc, setScsTimeConc] = useState([]);
   const [scslength, setScsLength] = useState(null);
   const [scsslope, setScsSlope] = useState(null);
 
@@ -21,23 +19,21 @@ export default function App() {
   const [currentscsPage, setCurrentScsPage] = useState(1);
   const itemsPerPage = 10;
   const prepareKirlichTableData = () => {
-    const lengths = kirpichvalue[0].length; // Assuming all data is in the first object
-    const slopes = kirpichvalue[0].slope;
-    const tcs = kirpichvalue[0].tc;
+    const lengths = kirpichvalue[0]?.length; // Assuming all data is in the first object
+    const slopes = kirpichvalue[0]?.slope;
 
     // Create an array of objects combining these values
     return lengths.map((length, index) => ({
       length,
       slope: slopes[index],
-      tc: tcs[index],
     }));
   };
   const KirlichtableData = prepareKirlichTableData();
 
   const prepareScsTableData = () => {
-    const lengths = scsvalue[0].length; // Assuming all data is in the first object
-    const slopes = scsvalue[0].slope;
-    const cn = scsvalue[0].cn;
+    const lengths = scsvalue[0]?.length; // Assuming all data is in the first object
+    const slopes = scsvalue[0]?.slope;
+    const cn = scsvalue[0]?.cn;
 
     // Create an array of objects combining these values
     return lengths.map((length, index) => ({
@@ -49,9 +45,9 @@ export default function App() {
   const ScstableData = prepareScsTableData();
   // Calculate total pages
   const totalKirpichTablePage = Math.ceil(
-    scsvalue[0].length.length / itemsPerPage
+    scsvalue[0]?.length.length / itemsPerPage
   );
-  const totalScsTablePage = Math.ceil(scsvalue[0].length.length / itemsPerPage);
+  const totalScsTablePage = Math.ceil(scsvalue[0]?.length.length / itemsPerPage);
 
   // Get current page data
   const indexOfLastItemkirpich = currentKirpichPage * itemsPerPage;
