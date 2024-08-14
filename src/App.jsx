@@ -68,7 +68,7 @@ export default function App() {
       }
 
       // // console.log(data); // Log the entire data array to check values
-      // setKirpichTimeConc(data);
+      setKirpichTimeConc(data);
       // console.log("Slopes array:", slopes);
       // console.log("Lengths array:", lengths);
     } else {
@@ -93,7 +93,7 @@ export default function App() {
       }
       // generate length up to 100
       let lengths = [];
-      for (let i = 1; i <= 100; i += 0.5) {
+      for (let i = 0.5; i <= 100; i += 0.5) {
         lengths.push(i);
         // console.log(`Added length: ${i}`); // Logging the length values
       }
