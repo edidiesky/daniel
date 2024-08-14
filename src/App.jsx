@@ -45,7 +45,7 @@ export default function App() {
   const ScstableData = prepareScsTableData();
   // Calculate total pages
   const totalKirpichTablePage = Math.ceil(
-    scsvalue[0]?.length.length / itemsPerPage
+    kirpichvalue[0]?.length.length / itemsPerPage
   );
   const totalScsTablePage = Math.ceil(scsvalue[0]?.length.length / itemsPerPage);
 
